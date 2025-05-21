@@ -5,20 +5,43 @@ import (
 	"monkey/ast"
 	"monkey/lexer"
 	"monkey/token"
+	"strconv"
+)
+
+const (
+	_ int = iota
+	LOWEST
+	EQUALS
+	LESSGREATER
+	SUM
+	PRODUCT
+	PREFIX
 )
 
 type Parser struct {
-	l         *lexer.Lexer
-	currToken token.Token
-	peekToken token.Token
-	errors    []string
+	l                *lexer.Lexer
+	currToken        token.Token
+	peekToken        token.Token
+	errors           []string
+	prefixParseFnMap map[token.Type]prefixParseFn
+	infixParseFnMap  map[token.Type]infixParseFn
 }
+
+type prefixParseFn func() ast.Expression
+type infixParseFn func(in ast.Expression) ast.Expression
 
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{
-		l:      l,
-		errors: []string{},
+		l:                l,
+		errors:           []string{},
+		prefixParseFnMap: map[token.Type]prefixParseFn{},
+		infixParseFnMap:  map[token.Type]infixParseFn{},
 	}
+
+	p.registerPrefixFn(token.IDENT, p.parseIdentifier)
+	p.registerPrefixFn(token.INT, p.parseIntegerLiteral)
+
+	//This is done to populate thr pointer of currToken and peekToken
 	p.nextToken()
 	p.nextToken()
 	return p
@@ -33,6 +56,14 @@ func (p *Parser) peekError(t token.Type) {
 	p.errors = append(p.errors, msg)
 }
 
+func (p *Parser) registerPrefixFn(tokenType token.Type, fn prefixParseFn) {
+	p.prefixParseFnMap[tokenType] = fn
+}
+
+func (p *Parser) registerInfixFn(tokenType token.Type, fn infixParseFn) {
+	p.infixParseFnMap[tokenType] = fn
+}
+
 func (p *Parser) nextToken() {
 	p.currToken = p.peekToken
 	p.peekToken = p.l.NextToken()
@@ -44,9 +75,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 
 	for p.currToken.Type != token.EOF {
 		stmt := p.parseStatement()
-		if stmt != nil {
-			program.Statements = append(program.Statements, stmt)
-		}
+		program.Statements = append(program.Statements, stmt)
 		p.nextToken()
 	}
 
@@ -60,7 +89,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
 
@@ -105,4 +134,46 @@ func (p *Parser) expectPeek(t token.Type) bool {
 	}
 	p.peekError(t)
 	return false
+}
+
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{Token: p.currToken}
+	stmt.Expression = p.parseExpression(LOWEST)
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParseFnMap[p.currToken.Type]
+	if prefix == nil {
+		return nil
+	}
+	leftExp := prefix()
+	return leftExp
+}
+
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{
+		Token: p.currToken,
+		Value: p.currToken.Literal,
+	}
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	intValue, err := strconv.ParseInt(p.currToken.Literal, 0, 64)
+	if err != nil {
+		p.parseIntegerError()
+	}
+
+	return &ast.IntegerLiteral{
+		Token: p.currToken,
+		Value: intValue,
+	}
+}
+
+func (p *Parser) parseIntegerError() {
+	msg := fmt.Sprintf("cannot parse %q as integer value", p.currToken.Literal)
+	p.errors = append(p.errors, msg)
 }

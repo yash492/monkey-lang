@@ -18,9 +18,8 @@ const (
 	ASTERISK = "*"
 	SLASH    = "/"
 
-	LT = "<"
-	GT = ">"
-kk
+	LT    = "<"
+	GT    = ">"
 	EQ    = "=="
 	NOTEQ = "!="
 
