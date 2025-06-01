@@ -130,7 +130,7 @@ func (i *IntegerLiteral) TokenLiteral() string {
 }
 
 type PrefixExpression struct {
-	Token    token.Token // The prefix token eg: !, - , +
+	Token    token.Token // The prefix token eg: !, -
 	Operator string
 	Right    Expression
 }
@@ -147,4 +147,93 @@ func (pe *PrefixExpression) String() string {
 	sb.WriteString(pe.Right.String())
 	sb.WriteString(")")
 	return sb.String()
+}
+
+type InfixExpression struct {
+	Token    token.Token // operator token
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+func (oe *InfixExpression) expressionNode() {}
+func (oe *InfixExpression) TokenLiteral() string {
+	return oe.Token.Literal
+}
+
+func (oe *InfixExpression) String() string {
+	sb := strings.Builder{}
+	sb.WriteString("(")
+	sb.WriteString(oe.Left.String())
+	sb.WriteString(" " + oe.Operator + " ")
+	sb.WriteString(oe.Right.String())
+	sb.WriteString(")")
+	return sb.String()
+}
+
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
+func (b *Boolean) String() string {
+	return b.Token.Literal
+}
+
+func (b *Boolean) expressionNode() {}
+
+func (b *Boolean) TokenLiteral() string {
+	return b.Token.Literal
+}
+
+type IfExpression struct {
+	Token       token.Token // The 'if' token
+	Condition   Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (ie *IfExpression) TokenLiteral() string {
+	return ie.Token.Literal
+}
+
+func (ie *IfExpression) expressionNode() {}
+
+func (ie *IfExpression) String() string {
+	out := strings.Builder{}
+	out.WriteString("if")
+	out.WriteString(ie.Condition.String())
+
+	if ie.Consequence != nil {
+		out.WriteString(" ")
+		out.WriteString(ie.Consequence.String())
+	}
+
+	if ie.Alternative != nil {
+		out.WriteString("else ")
+		out.WriteString(ie.Alternative.String())
+	}
+
+	return out.String()
+}
+
+type BlockStatement struct {
+	Token      token.Token // the '{' token
+	Statements []Statement
+}
+
+func (bs *BlockStatement) statementNode() {}
+
+func (bs *BlockStatement) TokenLiteral() string {
+	return bs.Token.Literal
+}
+
+func (bs *BlockStatement) String() string {
+	out := strings.Builder{}
+
+	for _, s := range bs.Statements {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
 }

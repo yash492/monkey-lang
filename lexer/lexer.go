@@ -41,7 +41,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '!':
 		nextChar := l.peekChar()
 		if nextChar == '=' {
-			tok.Literal = string(nextChar) + string(l.char)
+			tok.Literal = string(l.char) + string(nextChar)
 			tok.Type = token.NOTEQ
 			l.readChar()
 		} else {
