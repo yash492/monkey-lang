@@ -11,12 +11,12 @@ import (
 const (
 	_ int = iota
 	LOWEST
-	EQUALS
-	LESSGREATER
-	SUM
-	PRODUCT
-	//Prefix has the highest priority
-	PREFIX
+	EQUALS      // ==
+	LESSGREATER // > or <
+	SUM         // +
+	PRODUCT     // *
+	PREFIX      // -X or !X
+	CALL        // myFunction(X) It also has the highest priority
 )
 
 var precedences = map[token.Type]int{
@@ -28,6 +28,7 @@ var precedences = map[token.Type]int{
 	token.PLUS:     SUM,
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
+	token.LPAREN:   CALL,
 }
 
 // Parser can be assumed as a state
@@ -69,6 +70,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfixFn(token.ASTERISK, p.parseInfixExpressions)
 	p.registerInfixFn(token.LT, p.parseInfixExpressions)
 	p.registerInfixFn(token.GT, p.parseInfixExpressions)
+	p.registerInfixFn(token.LPAREN, p.parseCallExpression)
 
 	// p.nextToken() is done to populate the pointer of currToken and peekToken
 	p.nextToken()
@@ -131,8 +133,16 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Token: p.currToken,
 		Value: p.currToken.Literal,
 	}
+	
+	if !p.expectPeek(token.ASSIGN) {
+		return nil
+	}
 
-	for !p.currTokenIs(token.SEMICOLON) {
+	p.nextToken()
+
+	stmt.Value = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 	return stmt
@@ -141,7 +151,9 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.currToken}
-	for !p.currTokenIs(token.SEMICOLON) {
+     p.nextToken()
+	stmt.Value = p.parseExpression(LOWEST)
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 	return stmt
@@ -273,6 +285,7 @@ func (p *Parser) parseGroupExpression() ast.Expression {
 	p.nextToken()
 	exp := p.parseExpression(LOWEST)
 
+	// Good validation
 	if p.expectPeek(token.RPAREN) {
 		return exp
 	}
@@ -358,11 +371,42 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 		return nil
 	}
 
-	p.nextToken()
-
 	exp.Body = p.parseBlockStatement()
 
-	p.nextToken()
+	return exp
+}
+
+func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
+	exp := &ast.CallExpression{
+		Token:    p.currToken,
+		Function: function,
+	}
+
+	exp.Arguments = p.parseCallArguments()
 
 	return exp
+}
+
+func (p *Parser) parseCallArguments() []ast.Expression {
+	args := []ast.Expression{}
+
+	if p.peekTokenIs(token.RPAREN) {
+		p.nextToken()
+		return args
+	}
+
+	p.nextToken()
+
+	args = append(args, p.parseExpression(LOWEST))
+
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		args = append(args, p.parseExpression(LOWEST))
+	}
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+	return args
 }
