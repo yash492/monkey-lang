@@ -1,0 +1,6 @@
+name: Build Monkey Interpreter
+on:
+  push:
+    branches:
+      - main
+
