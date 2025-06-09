@@ -35,6 +35,9 @@ jobs:
   build_playground:
     needs: build_monkey
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./editor
 
     steps: 
       - name: Checkout and make the files available to the workflow
@@ -53,13 +56,12 @@ jobs:
         with:
           name: interpreter-wasm
 
-      - name: Move WASM binary to the static folder of editor codebase
+      - name: Move WASM binary to the static folder of the editor codebase
         run: |
           ls -la
           mv interpreter.wasm static/wasm
 
-      - run: npm install
-      - run: npm run build
+      
 
 
       
