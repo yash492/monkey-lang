@@ -54,7 +54,7 @@ jobs:
         run: |
           mv interpreter.wasm editor/static/wasm
 
-      - run: npm ci
+      - run: npm install
       - run: npm run build
 
 
