@@ -69,26 +69,19 @@ jobs:
           BASE_PATH: "/${{ github.event.repository.name }}"
         run: npm run build
 
-      - name: Upload static files as artifact
-        id: deployment
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: editor/build
-
   deploy:
     needs: build_playground
     runs-on: ubuntu-latest
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     permissions:
-      contents: read
-      pages: write
-      id-token: write
+       contents: read
+       deployments: write
 
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy editor/build --project-name=monkey-lang
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
