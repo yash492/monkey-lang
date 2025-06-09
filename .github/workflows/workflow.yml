@@ -60,6 +60,7 @@ jobs:
         run: |
           ls -la
           mv interpreter.wasm editor/static/wasm
+          
 
       
 
