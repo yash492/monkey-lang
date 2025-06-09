@@ -60,8 +60,14 @@ jobs:
           cd ..
           mv interpreter.wasm editor/static/wasm
 
-      - run: npm ci
-      - run: npm run build
+      - run: |
+          npm ci
+          echo "/${{ github.event.repository.name }}"
+
+      - name: npm run build
+        env:
+          BASE_PATH: "/monkey-lang"
+        run: npm run build
 
       - name: Upload static files as artifact
         id: deployment
