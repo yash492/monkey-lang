@@ -5,6 +5,26 @@ on:
       - main
 
 jobs:
-  build_interpreter:
+  build_monkey:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo and make the files available to the workflow
+        uses: actions/checkout@v4
+
+      - name: Setup Go 1.24.2
+        uses: actions/setup-go@v5
+        with: 
+          go-version: '1.24.2'
+          cache: true
+      
+      - name: Install dependencies
+        run: |
+          go get .
+
+      - name: Compile it and generate a WASM output.
+      - run: GOOS=js GOARCH=wasm go build -o interpreter.wasm
+
     
 
