@@ -6,7 +6,6 @@ on:
 
 jobs:
   build_monkey:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -15,10 +14,10 @@ jobs:
 
       - name: Setup Go v1.24.2
         uses: actions/setup-go@v5
-        with: 
-          go-version: '1.24.2'
+        with:
+          go-version: "1.24.2"
           cache: true
-      
+
       - name: Install dependencies
         run: |
           go get .
@@ -39,7 +38,7 @@ jobs:
       run:
         working-directory: ./editor
 
-    steps: 
+    steps:
       - name: Checkout and make the files available to the workflow
         uses: actions/checkout@v4
         with:
@@ -49,7 +48,7 @@ jobs:
       - name: Setup Node JS v22.15.0
         uses: actions/setup-node@v4
         with:
-          node-version: '22.15.0'
+          node-version: "22.15.0"
 
       - name: Download WASM binary from the artifact
         uses: actions/download-artifact@v4
@@ -59,20 +58,24 @@ jobs:
       - name: Move WASM binary to the static folder of the editor codebase
         run: |
           cd ..
-          ls -la
           mv interpreter.wasm editor/static/wasm
 
       - run: npm ci
       - run: npm run build
 
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/
 
-      
-
-
-      
-
-      
-
-
-
-
+deploy:
+  environment:
+    name: github-pages
+    url: ${{ steps.deployment.outputs.page_url }}
+  runs-on: ubuntu-latest
+  needs: build
+  steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
