@@ -62,6 +62,9 @@ jobs:
           ls -la
           mv interpreter.wasm editor/static/wasm
 
+      - run: npm ci
+      - run: npm run build
+
 
       
 
