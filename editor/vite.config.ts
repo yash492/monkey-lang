@@ -4,6 +4,5 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
-	base: '/monkey-lang/'
 	
 });
