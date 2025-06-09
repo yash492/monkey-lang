@@ -51,7 +51,7 @@ jobs:
           name: interpreter-wasm
 
       - name: Debug & Test Actions
-      - run: |
+        run: |
           ls -la
           mv interpreter-wasm editor/static/wasm
 
