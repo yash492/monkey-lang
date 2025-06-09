@@ -69,6 +69,12 @@ jobs:
       - name: npm run build
         run: npm run build
 
+      - name: Upload the build to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: editor/build
+
   deploy:
     needs: build_playground
     runs-on: ubuntu-latest
@@ -78,18 +84,18 @@ jobs:
        deployments: write
 
     steps:
-      - name: Checkout and make the files available to the workflow
-        uses: actions/checkout@v4
+      - name: Download the frontend build from the artifact
+        uses: actions/download-artifact@v4
         with:
-          sparse-checkout: editor
-          sparse-checkout-cone-mode: false
+          name: build
 
       - name: debug
         run: ls -la
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy editor/build --project-name=monkey-lang
+          command: pages deploy build --project-name=monkey-lang
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
