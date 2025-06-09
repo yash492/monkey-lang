@@ -83,5 +83,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy editor/build --project-name=monkey-lang
+          command: pages deploy editor/build
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
