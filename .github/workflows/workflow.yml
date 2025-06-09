@@ -58,9 +58,10 @@ jobs:
 
       - name: Move WASM binary to the static folder of the editor codebase
         run: |
+          cd ..
           ls -la
           mv interpreter.wasm editor/static/wasm
-          
+
 
       
 
