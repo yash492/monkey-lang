@@ -24,7 +24,7 @@ jobs:
           go get .
 
       - name: Compile it and generate a WASM output.
-      - run: GOOS=js GOARCH=wasm go build -o interpreter.wasm
+        run: GOOS=js GOARCH=wasm go build -o interpreter.wasm
 
     
 
