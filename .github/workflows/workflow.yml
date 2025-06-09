@@ -90,9 +90,6 @@ jobs:
           name: build
           path: build
 
-      - name: debug
-        run: ls -la
-
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
