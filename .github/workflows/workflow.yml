@@ -1,4 +1,4 @@
-name: Build Monkey Interpreter
+name: Monkey Interpreter
 on:
   push:
     branches:
@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repo and make the files available to the workflow
+      - name: Checkout and make the files available to the workflow
         uses: actions/checkout@v4
 
-      - name: Setup Go 1.24.2
+      - name: Setup Go v1.24.2
         uses: actions/setup-go@v5
         with: 
           go-version: '1.24.2'
@@ -23,14 +23,44 @@ jobs:
         run: |
           go get .
 
-      - name: Compile it and generate a WASM output.
+      - name: Compile it and generate a WASM output
         run: GOOS=js GOARCH=wasm go build -o interpreter.wasm
 
-      - name: Save WASM Binary
+      - name: Upload the WASM Binary to the artifact
         uses: actions/upload-artifact@v4
         with:
           name: interpreter-wasm
           path: interpreter.wasm
 
-    
+jobs:
+  build_playground:
+
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: Checkout and make the files available to the workflow
+        uses: actions/checkout@v4
+
+      - name: Setup Node JS v22.15.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.15.0'
+
+      - name: Download WASM binary from the artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: interpreter-wasm
+
+      - name: Debug & Test Actions
+      - run: |
+          ls -la
+          mv interpreter-wasm editor/static/wasm
+
+
+      
+
+      
+
+
+
 
