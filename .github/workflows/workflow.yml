@@ -39,6 +39,9 @@ jobs:
     steps: 
       - name: Checkout and make the files available to the workflow
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: editor
+          sparse-checkout-cone-mode: false
 
       - name: Setup Node JS v22.15.0
         uses: actions/setup-node@v4
@@ -52,7 +55,8 @@ jobs:
 
       - name: Move WASM binary to the static folder of editor codebase
         run: |
-          mv interpreter.wasm editor/static/wasm
+          ls -la
+          mv interpreter.wasm static/wasm
 
       - run: npm install
       - run: npm run build
