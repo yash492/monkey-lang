@@ -32,7 +32,6 @@ jobs:
           name: interpreter-wasm
           path: interpreter.wasm
 
-jobs:
   build_playground:
 
     runs-on: ubuntu-latest
