@@ -33,7 +33,7 @@ jobs:
           path: interpreter.wasm
 
   build_playground:
-
+    needs: build_monkey
     runs-on: ubuntu-latest
 
     steps: 
