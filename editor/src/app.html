@@ -7,7 +7,7 @@
 	<script src="wasm/wasm_exec.js"></script>
 	<script>
 		const go = new Go();
-		const result = WebAssembly.instantiateStreaming(fetch("wasm/main.wasm"), go.importObject).then((result) => {
+		const result = WebAssembly.instantiateStreaming(fetch("wasm/interpreter.wasm"), go.importObject).then((result) => {
 			go.run(result.instance);
 		});
 
