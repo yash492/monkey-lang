@@ -78,6 +78,12 @@ jobs:
        deployments: write
 
     steps:
+      - name: Checkout and make the files available to the workflow
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: editor
+          sparse-checkout-cone-mode: false
+
       - name: debug
         run: ls -la
       - name: Deploy to Cloudflare Pages
