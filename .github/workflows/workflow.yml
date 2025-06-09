@@ -50,10 +50,12 @@ jobs:
         with:
           name: interpreter-wasm
 
-      - name: Debug & Test Actions
+      - name: Move WASM binary to the static folder of editor codebase
         run: |
-          ls -la
-          mv interpreter-wasm editor/static/wasm
+          mv interpreter.wasm editor/static/wasm
+
+      - run: npm ci
+      - run: npm run build
 
 
       
