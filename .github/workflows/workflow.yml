@@ -66,7 +66,7 @@ jobs:
 
       - name: npm run build
         env:
-          BASE_PATH: "/monkey-lang"
+          BASE_PATH: "/${{ github.event.repository.name }}"
         run: npm run build
 
       - name: Upload static files as artifact
