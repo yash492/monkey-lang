@@ -83,7 +83,7 @@ func (p *Parser) Errors() []string {
 }
 
 func (p *Parser) peekError(t token.Type) {
-	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	msg := fmt.Sprintf("expected next token to be %s, got %s (value=%s) instead", t, p.peekToken.Type, p.peekToken.Literal)
 	p.errors = append(p.errors, msg)
 }
 
@@ -133,7 +133,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Token: p.currToken,
 		Value: p.currToken.Literal,
 	}
-	
+
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
@@ -151,7 +151,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.currToken}
-     p.nextToken()
+	p.nextToken()
 	stmt.Value = p.parseExpression(LOWEST)
 	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
@@ -311,7 +311,8 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 	expression.Consequence = p.parseBlockStatement()
 
-	if p.expectPeek(token.ELSE) {
+	if p.peekTokenIs(token.ELSE) {
+		p.nextToken()
 		if !p.expectPeek(token.LBRACE) {
 			return nil
 		}

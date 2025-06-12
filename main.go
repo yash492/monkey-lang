@@ -4,11 +4,14 @@
 package main
 
 import (
+	"monkey/evaluator"
 	"monkey/lexer"
 	"monkey/parser"
 	"strings"
 	"syscall/js"
 )
+
+const defaultErrMsg = "Could not evaluate. Something went wrong!"
 
 func main() {
 
@@ -21,7 +24,7 @@ func main() {
 		result, isError := run(args[0].String())
 
 		response := map[string]any{
-			"result": result,
+			"result":   result,
 			"is_error": isError,
 		}
 		return js.ValueOf(response)
@@ -31,6 +34,8 @@ func main() {
 
 }
 
+// run returns result and whether error occurred after
+// lexing -> parsing -> evaluation
 func run(code string) (string, bool) {
 
 	l := lexer.New(code)
@@ -41,7 +46,13 @@ func run(code string) (string, bool) {
 		return printParserErrors(p.Errors()), true
 	}
 
-	return program.String(), false
+	evaluated := evaluator.Eval(program)
+
+	if evaluated != nil {
+		return evaluated.Inspect(), false
+	}
+
+	return defaultErrMsg, false
 }
 
 func printParserErrors(errors []string) string {

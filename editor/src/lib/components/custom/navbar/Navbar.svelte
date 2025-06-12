@@ -1,12 +1,17 @@
 <script>
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Wasm } from '$lib/wasm';
-	import { Github, Play } from '@lucide/svelte';
+	import { Play } from '@lucide/svelte';
 	import { codeState } from '../../../../routes/state.svelte';
 	import { toast } from 'svelte-sonner';
 
 	const wasm = new Wasm();
 	function onInterpret() {
+		if (codeState.inputCode.trim() === '') {
+			codeState.result = "Press the 'Run' button to see the result.";
+			return;
+		}
+
 		const result = wasm.interpret(codeState.inputCode);
 		codeState.result = result.result;
 		codeState.isError = result.is_error;
