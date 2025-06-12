@@ -52,7 +52,7 @@ func run(code string) (string, bool) {
 		return evaluated.Inspect(), false
 	}
 
-	return defaultErrMsg, false
+	return defaultErrMsg, true
 }
 
 func printParserErrors(errors []string) string {
