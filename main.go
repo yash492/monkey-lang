@@ -18,25 +18,30 @@ func main() {
 		if len(args) != 1 {
 			return js.ValueOf("err: wrong data")
 		}
-		result := run(args[0].String())
-		return js.ValueOf(result)
+		result, isError := run(args[0].String())
+
+		response := map[string]any{
+			"result": result,
+			"is_error": isError,
+		}
+		return js.ValueOf(response)
 	}))
 
 	<-ch
 
 }
 
-func run(code string) string {
+func run(code string) (string, bool) {
 
 	l := lexer.New(code)
 	p := parser.New(l)
 
 	program := p.ParseProgram()
 	if len(p.Errors()) != 0 {
-		return printParserErrors(p.Errors())
+		return printParserErrors(p.Errors()), true
 	}
 
-	return program.String()
+	return program.String(), false
 }
 
 func printParserErrors(errors []string) string {

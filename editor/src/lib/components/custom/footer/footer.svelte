@@ -7,10 +7,7 @@
 		<div class="flex items-center">
 			<p class="font-fira mr-3 flex items-center text-xs font-light">
 				Thank you <span class="ml-2 font-bold hover:text-blue-400">
-					<a href="https://interpreterbook.com" target="_blank">Thorsten Ball</a></span
-				>
-				<span class="mx-1 inline-block">
-					<Heart color="#ed0a06" fill="#ed0a06" size="20" />
+					<a href="https://interpreterbook.com" target="_blank">Thorsten Ball</a> 🙌
 				</span>
 			</p>
 			<!-- <Github size="20" /> -->
@@ -21,22 +18,10 @@
 				<span class="mx-1 inline-block">
 					<Heart color="#ed0a06" fill="#ed0a06" size="20" />
 				</span>
-				using
-				<img
-					class="mr-2 ml-1 inline-block"
-					src="/icons/go_icon.svg"
-					alt="Go Icon"
-					height="35"
-					width="35"
-				/>
-				&
-				<img
-					class="mx-2 inline-block"
-					src="/icons/svelte_icon.svg"
-					alt="Svelte Icon"
-					height="15"
-					width="15"
-				/>
+				by
+				<span class="ml-2 font-bold hover:text-blue-400">
+					<a href="https://github.com/yash492/monkey-lang" target="_blank">Yash Jain</a></span
+				>
 			</p>
 		</div>
 	</div>
@@ -57,22 +42,10 @@
 				<span class="mx-1 inline-block">
 					<Heart color="#ed0a06" fill="#ed0a06" size="15" />
 				</span>
-				using
-				<img
-					class="mr-1 inline-block"
-					src="/icons/go_icon.svg"
-					alt="Go Icon"
-					height="20"
-					width="20"
-				/>
-				&
-				<img
-					class="mx-1 inline-block"
-					src="/icons/svelte_icon.svg"
-					alt="Svelte Icon"
-					height="10"
-					width="10"
-				/>
+				by
+				<span class="ml-2 font-bold hover:text-blue-400">
+					<a href="https://github.com/yash492/monkey-lang" target="_blank">Yash Jain</a></span
+				>
 			</p>
 		</div>
 	</div>

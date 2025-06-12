@@ -2,19 +2,12 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 	import * as Card from '$lib/components/ui/card';
-
-	import { Wasm } from '$lib/wasm';
-	import { Button } from '$lib/components/ui/button';
-	import { Play } from '@lucide/svelte';
+	import { codeState } from './state.svelte';
 
 	let editor: Monaco.editor.IStandaloneCodeEditor;
 	let monaco: typeof Monaco;
 	let editorContainer: HTMLElement;
 
-	const wasm = new Wasm();
-
-	let inputCode = $state('blah blah');
-	let output = $state("Press the 'run' button to see the result.");
 	let currentModel = $state<Monaco.editor.ITextModel>();
 
 	onMount(async () => {
@@ -33,7 +26,7 @@
 		});
 
 		monaco.editor.setTheme('vs-dark');
-		const model = monaco.editor.createModel(inputCode);
+		const model = monaco.editor.createModel(codeState.inputCode);
 		currentModel = model;
 		editor.setModel(model);
 	});
@@ -45,7 +38,7 @@
 
 	$effect(() => {
 		currentModel?.onDidChangeContent((_) => {
-			inputCode = currentModel?.getValue() || '';
+			codeState.inputCode = currentModel?.getValue() || '';
 		});
 	});
 </script>
@@ -58,7 +51,7 @@
 		<Card.Root class="h-[32vh] rounded-none border-0">
 			<Card.Content class="font-fira h-[calc(100%-0.5rem)]  overflow-y-scroll">
 				<p class="font-fira mb-2 text-xs font-light">OUTPUT</p>
-				<p class="text-sm">{output}</p>
+				<p class="text-sm">{codeState.result}</p>
 			</Card.Content>
 		</Card.Root>
 	</div>
