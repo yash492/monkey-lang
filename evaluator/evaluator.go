@@ -5,6 +5,12 @@ import (
 	"monkey/object"
 )
 
+var (
+	TrueObj  = &object.Boolean{Value: true}
+	FalseObj = &object.Boolean{Value: false}
+	NullObj  = &object.Null{}
+)
+
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 
@@ -16,6 +22,12 @@ func Eval(node ast.Node) object.Object {
 
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
+
+	case *ast.Boolean:
+		if node.Value {
+			return TrueObj
+		}
+		return FalseObj
 
 	}
 	return nil
