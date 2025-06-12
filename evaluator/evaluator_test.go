@@ -41,3 +41,14 @@ func testIntegerObject(t *testing.T, obj  object.Object, expected int64) bool {
 
 	return true
 }
+
+func TestBangOperator(t *testing.T) {
+	tests := []struct{
+		input string
+		expected bool
+	}{
+		{"!true", false},
+		{"!"}
+
+	}
+}
