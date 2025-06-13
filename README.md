@@ -9,6 +9,22 @@ This repository implements a Monkey programming language interpreter in Go. It i
 - **Evaluator**: Executes the AST.
 - **REPL**: Interactive shell for testing Monkey code.
 
+## WebAssembly Integration
+
+The project leverages WebAssembly (Wasm) to enable high-performance execution of the Monkey language in web environments. This integration allows the interpreter to run directly in browsers, providing a seamless experience for users without requiring native installations.
+
+### Purpose
+WebAssembly enhances the portability and performance of the Monkey language interpreter, making it accessible to a broader audience.
+
+### Functionality
+- **Compilation**: The Go-based interpreter is compiled to WebAssembly using `wasm_exec.js`.
+- **Frontend Integration**: The `editor/src/lib/wasm/index.ts` file handles communication between the WebAssembly module and the frontend editor.
+- **Execution**: Monkey code can be executed in the browser with near-native performance.
+
+### Relevant Files
+- [`editor/src/lib/wasm/index.ts`](editor/src/lib/wasm/index.ts)
+- [`editor/static/wasm/wasm_exec.js`](editor/static/wasm/wasm_exec.js)
+
 ## Examples
 
 ### Let Statement
