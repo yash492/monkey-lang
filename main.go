@@ -6,6 +6,7 @@ package main
 import (
 	"monkey/evaluator"
 	"monkey/lexer"
+	"monkey/object"
 	"monkey/parser"
 	"strings"
 	"syscall/js"
@@ -37,16 +38,16 @@ func main() {
 // run returns result and whether error occurred after
 // lexing -> parsing -> evaluation
 func run(code string) (string, bool) {
-
 	l := lexer.New(code)
 	p := parser.New(l)
-
 	program := p.ParseProgram()
+	env := object.NewEnvironment()
+	
 	if len(p.Errors()) != 0 {
 		return printParserErrors(p.Errors()), true
 	}
 
-	evaluated := evaluator.Eval(program)
+	evaluated := evaluator.Eval(program, env)
 
 	if evaluated != nil {
 		return evaluated.Inspect(), false
