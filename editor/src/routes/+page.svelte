@@ -3,7 +3,11 @@
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 	import * as Card from '$lib/components/ui/card';
 	import { codeState } from './state.svelte';
-	import { monarchConfig } from '$lib/components/monaco/monarch-config';
+	import {
+		MonacoLanguageConfiguration,
+		MonarchConfig,
+		MONKEY_LANGUAGE
+	} from '$lib/components/monaco/language-config';
 
 	let editor: Monaco.editor.IStandaloneCodeEditor;
 	let monaco: typeof Monaco;
@@ -25,13 +29,23 @@
 				alwaysConsumeMouseWheel: false
 			}
 		});
+		
 		monaco.languages.register({
-			id: 'monkey'
+			id: MONKEY_LANGUAGE
 		});
 
-		monaco.languages.setMonarchTokensProvider('monkey', monarchConfig);
-		monaco.editor.setTheme('vs-dark');
-		const model = monaco.editor.createModel(codeState.inputCode);
+		monaco.languages.setMonarchTokensProvider(MONKEY_LANGUAGE, MonarchConfig);
+		monaco.languages.setLanguageConfiguration(MONKEY_LANGUAGE, MonacoLanguageConfiguration);
+		monaco.editor.defineTheme('monkey-theme', {
+			base: 'vs-dark',
+			inherit: true,
+			rules: [],
+			colors: {}
+		});
+
+		monaco.editor.setTheme('monkey-theme');
+
+		const model = monaco.editor.createModel(codeState.inputCode, MONKEY_LANGUAGE);
 		currentModel = model;
 		editor.setModel(model);
 	});

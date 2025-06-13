@@ -5,9 +5,9 @@ import "fmt"
 type ObjectType string
 
 const (
-	integerObj ObjectType = "INTEGER"
-	booleanObj ObjectType = "BOOLEAN"
-	nullObj    ObjectType = "NULL"
+	IntegerTypeObj ObjectType = "INTEGER"
+	BooleanTypeObj ObjectType = "BOOLEAN"
+	NullTypeObj    ObjectType = "NULL"
 )
 
 type Object interface {
@@ -24,7 +24,7 @@ func (i *Integer) Inspect() string {
 }
 
 func (i *Integer) Type() ObjectType {
-	return integerObj
+	return IntegerTypeObj
 }
 
 type Boolean struct {
@@ -36,7 +36,7 @@ func (b *Boolean) Inspect() string {
 }
 
 func (b *Boolean) Type() ObjectType {
-	return booleanObj
+	return BooleanTypeObj
 }
 
 type Null struct{}
@@ -46,5 +46,5 @@ func (n *Null) Inspect() string {
 }
 
 func (n *Null) Type() ObjectType {
-	return nullObj
+	return NullTypeObj
 }
