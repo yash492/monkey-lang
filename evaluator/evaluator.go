@@ -32,7 +32,13 @@ func Eval(node ast.Node) object.Object {
 	case *ast.PrefixExpression:
 		right := Eval(node.Right)
 		return evalPrefixExpression(node.Operator, right)
+
+	case *ast.InfixExpression:
+		left := Eval(node.Left)
+		right := Eval(node.Right)
+		return evalInfixExpression(node.Operator, left, right)
 	}
+
 	return nil
 }
 
@@ -50,6 +56,8 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 		return evalBangOperatorExpression(right)
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
+	case "==":
+
 	}
 
 	return NullObj
@@ -76,4 +84,51 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	}
 
 	return &object.Integer{Value: -value.Value}
+}
+
+func evalInfixExpression(operator string, left, right object.Object) object.Object {
+	switch {
+	case left.Type() == object.IntegerTypeObj && right.Type() == object.IntegerTypeObj:
+		return evalIntegerInfixExpression(operator, left, right)
+	case operator == "==":
+		return nativeBoolToBooleanObj(left == right)
+	case operator == "!=":
+		return nativeBoolToBooleanObj(left != right)
+	default:
+		return NullObj
+	}
+}
+
+func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+	leftValue := left.(*object.Integer).Value
+	rightValue := right.(*object.Integer).Value
+
+	switch operator {
+	case "+":
+		return &object.Integer{Value: leftValue + rightValue}
+	case "-":
+		return &object.Integer{Value: leftValue - rightValue}
+	case "*":
+		return &object.Integer{Value: leftValue * rightValue}
+	case "/":
+		return &object.Integer{Value: leftValue / rightValue}
+	case "<":
+		return nativeBoolToBooleanObj(leftValue < rightValue)
+	case ">":
+		return nativeBoolToBooleanObj(leftValue > rightValue)
+	case "==":
+		return nativeBoolToBooleanObj(leftValue == rightValue)
+	case "!=":
+		return nativeBoolToBooleanObj(leftValue != rightValue)
+
+	}
+
+	return NullObj
+}
+
+func nativeBoolToBooleanObj(input bool) *object.Boolean {
+	if input {
+		return TrueObj
+	}
+	return FalseObj
 }
