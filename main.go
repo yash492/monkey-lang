@@ -15,7 +15,7 @@ import (
 const defaultErrMsg = "Could not evaluate. Something went wrong!"
 
 func main() {
-
+	ch := make(chan bool)
 	js.Global().Set("interpret", js.FuncOf(func(this js.Value, args []js.Value) any {
 		if len(args) != 1 {
 			return js.ValueOf("err: wrong data")
@@ -29,6 +29,7 @@ func main() {
 		return js.ValueOf(response)
 	}))
 
+	<-ch
 
 }
 
@@ -39,7 +40,7 @@ func run(code string) (string, bool) {
 	p := parser.New(l)
 	program := p.ParseProgram()
 	env := object.NewEnvironment()
-	
+
 	if len(p.Errors()) != 0 {
 		return printParserErrors(p.Errors()), true
 	}
