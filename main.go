@@ -4,6 +4,7 @@
 package main
 
 import (
+	"encoding/json"
 	"monkey/evaluator"
 	"monkey/lexer"
 	"monkey/object"
@@ -21,6 +22,19 @@ func main() {
 			return js.ValueOf("err: wrong data")
 		}
 		result, isError := run(args[0].String())
+
+		response := map[string]any{
+			"result":   result,
+			"is_error": isError,
+		}
+		return js.ValueOf(response)
+	}))
+
+	js.Global().Set("getAST", js.FuncOf(func(this js.Value, args []js.Value) any {
+		if len(args) != 1 {
+			return js.ValueOf("err: wrong data")
+		}
+		result, isError := getAST(args[0].String())
 
 		response := map[string]any{
 			"result":   result,
@@ -52,6 +66,23 @@ func run(code string) (string, bool) {
 	}
 
 	return defaultErrMsg, true
+}
+
+func getAST(code string) (string, bool) {
+	l := lexer.New(code)
+	p := parser.New(l)
+	program := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		return printParserErrors(p.Errors()), true
+	}
+
+	bytes, err := json.Marshal(program)
+	if err != nil {
+		return err.Error(), true
+	}
+
+	return string(bytes), false
+
 }
 
 func printParserErrors(errors []string) string {

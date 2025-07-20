@@ -114,14 +114,37 @@ func (p *Parser) ParseProgram() *ast.Program {
 }
 
 func (p *Parser) parseStatement() ast.Statement {
-	switch p.currToken.Type {
-	case token.LET:
+	// switch p.currToken.Type {
+	// case token.LET:
+	// 	return p.parseLetStatement()
+	// case token.RETURN:
+	// 	return p.parseReturnStatement()
+	// case token.IDENT && !p.peekTokenIs(token.PLUS) :
+	// 	return p.parseAssignStatement()
+	// case token.WHILE:
+	// 	return p.parseWhileStatement()
+	// default:
+	// 	return p.parseExpressionStatement()
+	// }
+
+	if p.currTokenIs(token.LET) {
 		return p.parseLetStatement()
-	case token.RETURN:
-		return p.parseReturnStatement()
-	default:
-		return p.parseExpressionStatement()
 	}
+
+	if p.currTokenIs(token.RETURN) {
+		return p.parseReturnStatement()
+	}
+
+	if p.currTokenIs(token.WHILE) {
+		return p.parseWhileStatement()
+	}
+
+	if p.currTokenIs(token.IDENT) && p.peekTokenIs(token.ASSIGN) {
+		return p.parseAssignStatement()
+	}
+
+	return p.parseExpressionStatement()
+
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
@@ -129,6 +152,29 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
+	stmt.Name = &ast.Identifier{
+		Token: p.currToken,
+		Value: p.currToken.Literal,
+	}
+
+	if !p.expectPeek(token.ASSIGN) {
+		return nil
+	}
+
+	p.nextToken()
+
+	stmt.Value = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+	return stmt
+
+}
+
+func (p *Parser) parseAssignStatement() *ast.AssignStatement {
+	stmt := &ast.AssignStatement{Token: p.currToken}
+
 	stmt.Name = &ast.Identifier{
 		Token: p.currToken,
 		Value: p.currToken.Literal,
@@ -321,6 +367,27 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 
 	return expression
+}
+
+func (p *Parser) parseWhileStatement() ast.Statement {
+	stmt := &ast.WhileStatement{
+		Token: p.currToken,
+	}
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	p.nextToken()
+	stmt.Condition = p.parseExpression(LOWEST)
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+	stmt.Consequence = p.parseBlockStatement()
+
+	return stmt
 }
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {

@@ -78,6 +78,27 @@ func (i *Identifier) String() string {
 	return i.Value
 }
 
+type AssignStatement struct {
+	Token token.Token // Token of an identifier
+	Name  *Identifier // Name holds the variable name (x)
+	Value Expression  // Value comes whatever comes after the assign operator (5)
+}
+
+func (ls *AssignStatement) statementNode() {}
+func (ls *AssignStatement) TokenLiteral() string {
+	return ls.Token.Literal
+}
+func (ls *AssignStatement) String() string {
+	var out strings.Builder
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(" = ")
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+	out.WriteString(";")
+	return out.String()
+}
+
 type ReturnStatement struct {
 	Token token.Token
 	Value Expression
@@ -97,6 +118,29 @@ func (r *ReturnStatement) String() string {
 	}
 	out.WriteString(";")
 	return out.String()
+}
+
+type WhileStatement struct {
+	Token       token.Token // The 'while' token
+	Condition   Expression
+	Consequence *BlockStatement
+}
+
+func (ws *WhileStatement) statementNode() {}
+func (ws *WhileStatement) TokenLiteral() string {
+	return ws.Token.Literal
+}
+func (ws *WhileStatement) String() string {
+	out := strings.Builder{}
+	out.WriteString("if")
+	out.WriteString(ws.Condition.String())
+
+	if ws.Consequence != nil {
+		out.WriteString(" ")
+		out.WriteString(ws.Consequence.String())
+	}
+	return out.String()
+
 }
 
 type ExpressionStatement struct {

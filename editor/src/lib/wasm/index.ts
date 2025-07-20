@@ -8,4 +8,9 @@ export class Wasm {
     interpret(code: string): InterpreterResult {
         return this._global.interpret(code)
     }
+
+    getAST(code: string): InterpreterResult {
+        return this._global.getAST(code)
+    } 
 }
+
