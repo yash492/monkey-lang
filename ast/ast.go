@@ -22,7 +22,7 @@ type Expression interface {
 
 // Program is the root node of AST
 type Program struct {
-	Statements []Statement
+	Statements []Statement `json:"statements"`
 }
 
 func (p *Program) TokenLiteral() string {
@@ -44,9 +44,9 @@ func (p *Program) String() string {
 // let's take an example of let x = 5
 // It will be parsed into let token, Name = x and with the value of 5
 type LetStatement struct {
-	Token token.Token // the token.LET token (let)
-	Name  *Identifier // Name holds the variable name (x)
-	Value Expression  // Value comes whatever comes after the assign operator (5)
+	Token token.Token `json:"token"` // the token.LET token (let)
+	Name  *Identifier `json:"name"`  // Name holds the variable name (x)
+	Value Expression  `json:"value"` // Value comes whatever comes after the assign operator (5)
 }
 
 func (ls *LetStatement) statementNode() {}
@@ -66,8 +66,8 @@ func (ls *LetStatement) String() string {
 }
 
 type Identifier struct {
-	Token token.Token // Type - "IDENT" : Literal - variable name
-	Value string      // Value - variable name
+	Token token.Token `json:"token"` // Type - "IDENT" : Literal - variable name
+	Value string      `json:"value"` // Value - variable name
 }
 
 func (i *Identifier) expressionNode() {}
@@ -79,9 +79,9 @@ func (i *Identifier) String() string {
 }
 
 type AssignStatement struct {
-	Token token.Token // Token of an identifier
-	Name  *Identifier // Name holds the variable name (x)
-	Value Expression  // Value comes whatever comes after the assign operator (5)
+	Token token.Token `json:"token"` // Token of an identifier
+	Name  *Identifier `json:"name"`  // Name holds the variable name (x)
+	Value Expression  `json:"value"` // Value comes whatever comes after the assign operator (5)
 }
 
 func (ls *AssignStatement) statementNode() {}
@@ -100,8 +100,8 @@ func (ls *AssignStatement) String() string {
 }
 
 type ReturnStatement struct {
-	Token token.Token
-	Value Expression
+	Token token.Token `json:"token"`
+	Value Expression  `json:"value"`
 }
 
 func (r *ReturnStatement) statementNode() {}
@@ -121,9 +121,9 @@ func (r *ReturnStatement) String() string {
 }
 
 type WhileStatement struct {
-	Token       token.Token // The 'while' token
-	Condition   Expression
-	Consequence *BlockStatement
+	Token       token.Token     `json:"token"` // The 'while' token
+	Condition   Expression      `json:"condition"`
+	Consequence *BlockStatement `json:"consequence"`
 }
 
 func (ws *WhileStatement) statementNode() {}
@@ -144,8 +144,8 @@ func (ws *WhileStatement) String() string {
 }
 
 type ExpressionStatement struct {
-	Token      token.Token // the first token of the expression
-	Expression Expression
+	Token      token.Token `json:"token"` // the first token of the expression
+	Expression Expression  `json:"expression"`
 }
 
 func (es *ExpressionStatement) statementNode() {}
@@ -161,8 +161,8 @@ func (es *ExpressionStatement) String() string {
 }
 
 type IntegerLiteral struct {
-	Token token.Token
-	Value int64
+	Token token.Token `json:"token"`
+	Value int64       `json:"value"`
 }
 
 func (i *IntegerLiteral) expressionNode() {}
@@ -174,9 +174,9 @@ func (i *IntegerLiteral) TokenLiteral() string {
 }
 
 type PrefixExpression struct {
-	Token    token.Token // The prefix token eg: !, -
-	Operator string
-	Right    Expression
+	Token    token.Token `json:"token"` // The prefix token eg: !, -
+	Operator string      `json:"operator"`
+	Right    Expression  `json:"right"`
 }
 
 func (pe *PrefixExpression) expressionNode() {}
@@ -194,10 +194,10 @@ func (pe *PrefixExpression) String() string {
 }
 
 type InfixExpression struct {
-	Token    token.Token // operator token
-	Left     Expression
-	Operator string
-	Right    Expression
+	Token    token.Token `json:"token"` // operator token
+	Left     Expression  `json:"left"`
+	Operator string      `json:"operator"`
+	Right    Expression  `json:"right"`
 }
 
 func (oe *InfixExpression) expressionNode() {}
@@ -216,8 +216,8 @@ func (oe *InfixExpression) String() string {
 }
 
 type Boolean struct {
-	Token token.Token
-	Value bool
+	Token token.Token `json:"token"`
+	Value bool        `json:"value"`
 }
 
 func (b *Boolean) String() string {
@@ -231,10 +231,10 @@ func (b *Boolean) TokenLiteral() string {
 }
 
 type IfExpression struct {
-	Token       token.Token // The 'if' token
-	Condition   Expression
-	Consequence *BlockStatement
-	Alternative *BlockStatement
+	Token       token.Token     `json:"token"` // The 'if' token
+	Condition   Expression      `json:"condition"`
+	Consequence *BlockStatement `json:"consequence"`
+	Alternative *BlockStatement `json:"alternative"`
 }
 
 func (ie *IfExpression) TokenLiteral() string {
@@ -262,8 +262,8 @@ func (ie *IfExpression) String() string {
 }
 
 type BlockStatement struct {
-	Token      token.Token // the '{' token
-	Statements []Statement
+	Token      token.Token `json:"token"` // the '{' token
+	Statements []Statement `json:"statements"`
 }
 
 func (bs *BlockStatement) statementNode() {}
@@ -283,9 +283,9 @@ func (bs *BlockStatement) String() string {
 }
 
 type FunctionLiteral struct {
-	Token      token.Token // The fn token
-	Parameters []*Identifier
-	Body       *BlockStatement
+	Token      token.Token     `json:"token"` // The fn token
+	Parameters []*Identifier   `json:"parameters"`
+	Body       *BlockStatement `json:"body"`
 }
 
 func (fl *FunctionLiteral) String() string {
@@ -311,9 +311,9 @@ func (fl *FunctionLiteral) TokenLiteral() string {
 }
 
 type CallExpression struct {
-	Token     token.Token // T`he '(' token
-	Function  Expression
-	Arguments []Expression
+	Token     token.Token  `json:"token"` // T`he '(' token
+	Function  Expression   `json:"function"`
+	Arguments []Expression `json:"arguments"`
 }
 
 func (ce *CallExpression) expressionNode() {}

@@ -74,6 +74,28 @@ func TestEvalBooleanExpression(t *testing.T) {
 	}
 }
 
+// func TestWhileStatements(t *testing.T) {
+// 	tests := []struct {
+// 		input    string
+// 		expected any
+// 	}{
+// 		{
+// 			input: `let x = 0
+// 					while (x < 5) {
+// 						x = x + 1;
+// 					}
+// 					x;`,
+// 			expected: 5,
+// 		},
+// 	}
+
+// 	for _, tt := range tests {
+// 		evaluated := testEval(tt.input)
+		
+
+// 	}
+// }
+
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
 		input    string

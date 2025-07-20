@@ -61,6 +61,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
 
+	case *ast.WhileStatement:
+		return evalWhileStatement(node, env)
+
 	case *ast.ReturnStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {
@@ -70,6 +73,17 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
+
+	case *ast.AssignStatement:
+		_, ok := env.Get(node.Name.Value)
+		if !ok {
+			return newError("%s is not defined", node.Name.Value)
+		}
+		val := Eval(node.Value, env)
+		if isError(val) {
+			return val
+		}
+		env.Set(node.Name.Value, val)
 	}
 
 	return nil
@@ -101,6 +115,24 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 	} else {
 		return NullObj
 	}
+}
+
+func evalWhileStatement(ie *ast.WhileStatement, env *object.Environment) object.Object {
+	condition := Eval(ie.Condition, env)
+
+	if isError(condition) {
+		return condition
+	}
+
+	var result object.Object
+
+	for isTruthy(condition) {
+		result = Eval(ie.Consequence, env)
+		condition = Eval(ie.Condition, env)
+	}
+
+	return result
+
 }
 
 func isTruthy(obj object.Object) bool {

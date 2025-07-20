@@ -13,7 +13,7 @@ import (
 	"syscall/js"
 )
 
-const defaultErrMsg = "Could not evaluate. Something went wrong!"
+const defaultOuput = "No Result. Code executed successfully."
 
 func main() {
 	ch := make(chan bool)
@@ -61,11 +61,15 @@ func run(code string) (string, bool) {
 
 	evaluated := evaluator.Eval(program, env)
 
-	if evaluated != nil {
-		return evaluated.Inspect(), false
+	if evaluated == nil {
+		return defaultOuput, false
 	}
 
-	return defaultErrMsg, true
+	if evaluated.Type() == object.ErrorObj {
+		return evaluated.Inspect(), true
+	}
+
+	return evaluated.Inspect(), false
 }
 
 func getAST(code string) (string, bool) {

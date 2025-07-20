@@ -43,8 +43,8 @@ const (
 )
 
 type Token struct {
-	Type    Type
-	Literal string
+	Type    Type   `json:"type"`
+	Literal string `json:"literal"`
 }
 
 var keywords = map[string]Type{
