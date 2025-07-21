@@ -1,17 +1,27 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Wasm } from '$lib/wasm';
-	import { Play, BadgeInfo, Copy } from '@lucide/svelte';
+	import { Play, TreePineIcon, Copy, Network } from '@lucide/svelte';
 	import { codeState } from '../../../../routes/state.svelte';
 	import { toast } from 'svelte-sonner';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import json from 'svelte-highlight/languages/json';
+	import { compress } from 'compress-json';
 	import base16IrBlack from 'svelte-highlight/styles/base16-ir-black';
 
+	const BASE_VISUALIZE_LINK = 'https://omute.net/editor';
 	let openDialog = $state(false);
 	let astContent = $state('');
+	let astContentParsed = $state({});
 	let astError = $state(false);
+	let visualizeLink = $state(BASE_VISUALIZE_LINK);
+
+	$effect(() => {
+		const compressedJSON = compress(astContentParsed);
+		const encodedJSON = encodeURIComponent(JSON.stringify(compressedJSON));
+		visualizeLink = `${BASE_VISUALIZE_LINK}?json=${encodedJSON}`;
+	});
 
 	const wasm = new Wasm();
 	function onInterpret() {
@@ -48,14 +58,14 @@
 		}
 
 		astContent = result.result;
+		astContentParsed = JSON.parse(result.result);
 	}
 
 	async function onCopy(text: string) {
 		try {
 			await navigator.clipboard.writeText(text);
-			toast.success('Success', {
-				position: 'top-right',
-				description: 'Copied the AST successfully'
+			toast.success('Copied!', {
+				position: 'top-right'
 			});
 		} catch (e) {
 			toast.error('Success', {
@@ -86,7 +96,7 @@
 			class="hidden cursor-pointer md:flex md:font-bold"
 			onclick={onOpenASTExplorer}
 		>
-			<BadgeInfo />
+			<TreePineIcon />
 			View AST
 		</Button>
 	</div>
@@ -97,11 +107,22 @@
 		<Dialog.Header>
 			<Dialog.Title>
 				<div class="flex items-center gap-6">
-					<p>AST Explorer</p>
-					<Button variant="outline" class="w-fit cursor-pointer" onclick={() => onCopy(astContent)}>
-						<Copy />
-						Copy</Button
-					>
+					<div>
+						<p>AST Explorer</p>
+					</div>
+					<div class="flex gap-2">
+						<Button variant="outline" class="cursor-pointer">
+							<Network />
+							<a href={visualizeLink} target="_blank">Visualize</a>
+						</Button>
+						<Button
+							variant="outline"
+							class="w-fit cursor-pointer"
+							onclick={() => onCopy(astContent)}
+						>
+							<Copy />
+						</Button>
+					</div>
 				</div>
 			</Dialog.Title>
 			<Dialog.Description
@@ -113,7 +134,7 @@
 					{:else}
 						<Highlight
 							language={json}
-							code={JSON.stringify(JSON.parse(astContent), null, 2)}
+							code={JSON.stringify(astContentParsed, null, 2)}
 							let:highlighted
 						>
 							<LineNumbers {highlighted} />
