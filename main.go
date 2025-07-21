@@ -65,7 +65,7 @@ func run(code string) (string, bool) {
 		return defaultOuput, false
 	}
 
-	if evaluated.Type() == object.ErrorObj {
+	if _, ok := evaluated.(*object.Error); ok {
 		return evaluated.Inspect(), true
 	}
 
