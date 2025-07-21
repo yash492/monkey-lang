@@ -74,27 +74,29 @@ func TestEvalBooleanExpression(t *testing.T) {
 	}
 }
 
-// func TestWhileStatements(t *testing.T) {
-// 	tests := []struct {
-// 		input    string
-// 		expected any
-// 	}{
-// 		{
-// 			input: `let x = 0
-// 					while (x < 5) {
-// 						x = x + 1;
-// 					}
-// 					x;`,
-// 			expected: 5,
-// 		},
-// 	}
+func TestWhileStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{
+			input: `let x = 0
+					while (x < 5) {
+						x = x + 1;
+					}
+					x;`,
+			expected: "5",
+		},
+	}
 
-// 	for _, tt := range tests {
-// 		evaluated := testEval(tt.input)
-		
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		if evaluated.Inspect() != tt.expected {
+			t.Errorf("expected=%s, got=%s", tt.expected, evaluated.Inspect())
+		}
 
-// 	}
-// }
+	}
+}
 
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
@@ -135,4 +137,49 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 		return false
 	}
 	return true
+}
+
+func TestIfElseExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected any
+	}{
+		{"if (true) {10}", 10},
+		{"if (false) {10}", nil},
+		{"if (1) {10}", 10},
+		{"if (1 < 2) {10}", 10},
+		{"if (1 > 2) {10}", nil},
+		{"if (1 > 2) {10} else { 20 }", 20},
+		{"if (1 < 2) {10} else { 20 }", 10},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		integer, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
+func TestLetStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{
+			"let a = 5; a;",
+			5,
+		},
+		{
+			"let a = 5 * 5; a;",
+			25,
+		},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
 }

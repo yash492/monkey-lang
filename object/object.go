@@ -10,6 +10,7 @@ const (
 	NullTypeObj    ObjectType = "NULL"
 	ReturnTypeObj  ObjectType = "RETURN"
 	ErrorObj       ObjectType = "ERROR"
+	FunctionObj    ObjectType = "FUNCTION"
 )
 
 type Object interface {

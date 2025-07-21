@@ -128,7 +128,15 @@ func evalWhileStatement(ie *ast.WhileStatement, env *object.Environment) object.
 
 	for isTruthy(condition) {
 		result = Eval(ie.Consequence, env)
+		if result != nil {
+			if result.Type() == object.ReturnTypeObj || result.Type() == object.ErrorObj {
+				return result
+			}
+		}
 		condition = Eval(ie.Condition, env)
+		if isError(condition) {
+			return condition
+		}
 	}
 
 	return result
@@ -152,10 +160,6 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	var result object.Object
 	for _, statement := range program.Statements {
 		result = Eval(statement, env)
-
-		if returnValue, ok := result.(*object.Return); ok {
-			return returnValue.Value
-		}
 
 		switch result := result.(type) {
 		case *object.Return:
