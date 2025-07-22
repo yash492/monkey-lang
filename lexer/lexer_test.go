@@ -13,13 +13,18 @@ func TestLexer(t *testing.T) {
 
 	tests := []testCase{
 		{
-			input: "let x = 5;",
+			input: `let x = 5;
+					"foobar";	
+			`,
 			output: []token.Token{
 				newToken(token.LET, "let"),
 				newToken(token.IDENT, "x"),
 				newToken(token.ASSIGN, "="),
 				newToken(token.INT, "5"),
 				newToken(token.SEMICOLON, ";"),
+				newToken(token.STRING, "foobar"),
+				newToken(token.SEMICOLON, ";"),
+
 			},
 		},
 		{

@@ -100,6 +100,11 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = string(l.char)
 		tok.Type = token.EOF
 
+	case '"':
+		tok.Literal = l.readString()
+		tok.Type = token.STRING
+
+
 	default:
 		if isLetter(l.char) {
 			identifier := l.getTextEntity(isLetter)
@@ -143,6 +148,15 @@ func (l *Lexer) readChar() {
 	}
 	l.currPosition = l.nextPosition
 	l.nextPosition += 1
+}
+
+func (l *Lexer) readString() string {
+	position := l.currPosition + 1
+	l.readChar()
+	for l.char != '"' {
+		l.readChar()
+	}
+	return l.input[position: l.currPosition]
 }
 
 // peekChar peeks the next char from the input
