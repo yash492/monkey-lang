@@ -404,40 +404,48 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 }
 
 func (p *Parser) parseFunctionLiteral() ast.Expression {
-	exp := &ast.FunctionLiteral{
-		Token: p.currToken,
-	}
+	lit := &ast.FunctionLiteral{Token: p.currToken}
 
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
-	p.nextToken()
-
-	parameters := []*ast.Identifier{}
-
-	if !p.peekTokenIs(token.RPAREN) {
-		for !p.currTokenIs(token.RPAREN) {
-			if !p.currTokenIs(token.COMMA) {
-				parameters = append(parameters, &ast.Identifier{
-					Token: p.currToken,
-					Value: p.currToken.Literal,
-				})
-			}
-
-			p.nextToken()
-		}
-	}
-
-	exp.Parameters = parameters
+	lit.Parameters = p.parseFunctionParameters()
 
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
 
-	exp.Body = p.parseBlockStatement()
+	lit.Body = p.parseBlockStatement()
 
-	return exp
+	return lit
+}
+
+func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+	identifiers := []*ast.Identifier{}
+
+	if p.peekTokenIs(token.RPAREN) {
+		p.nextToken()
+		return identifiers
+	}
+
+	p.nextToken()
+
+	ident := &ast.Identifier{Token: p.currToken, Value: p.currToken.Literal}
+	identifiers = append(identifiers, ident)
+
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		ident := &ast.Identifier{Token: p.currToken, Value: p.currToken.Literal}
+		identifiers = append(identifiers, ident)
+	}
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	return identifiers
 }
 
 func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
