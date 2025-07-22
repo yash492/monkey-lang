@@ -114,18 +114,6 @@ func (p *Parser) ParseProgram() *ast.Program {
 }
 
 func (p *Parser) parseStatement() ast.Statement {
-	// switch p.currToken.Type {
-	// case token.LET:
-	// 	return p.parseLetStatement()
-	// case token.RETURN:
-	// 	return p.parseReturnStatement()
-	// case token.IDENT && !p.peekTokenIs(token.PLUS) :
-	// 	return p.parseAssignStatement()
-	// case token.WHILE:
-	// 	return p.parseWhileStatement()
-	// default:
-	// 	return p.parseExpressionStatement()
-	// }
 
 	if p.currTokenIs(token.LET) {
 		return p.parseLetStatement()
